@@ -27,6 +27,27 @@ const Auth = () => {
     if (user) nav("/book", { replace: true });
   }, [user, nav]);
 
+  const friendlyError = (err: any): string => {
+    const msg: string = err?.message ?? "";
+    const code: string = err?.code ?? "";
+    if (code === "invalid_credentials" || /invalid login credentials/i.test(msg)) {
+      return "Invalid email or password.";
+    }
+    if (code === "email_not_confirmed" || /email not confirmed/i.test(msg)) {
+      return "Email not confirmed. Please check your inbox or contact support.";
+    }
+    if (code === "user_already_exists" || /already registered|already exists/i.test(msg)) {
+      return "An account with this email already exists. Try signing in.";
+    }
+    if (code === "over_email_send_rate_limit" || /rate limit/i.test(msg)) {
+      return "Too many attempts. Please wait a moment and try again.";
+    }
+    if (/fetch|network|failed to fetch/i.test(msg)) {
+      return "Network error. Check your connection and try again.";
+    }
+    return msg || "Something went wrong";
+  };
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const parsed = schema.safeParse({ email, password });
@@ -37,20 +58,40 @@ const Auth = () => {
     setLoading(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: `${window.location.origin}/book` },
+          options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
         });
         if (error) throw error;
-        toast.success("Welcome aboard. You're signed in.");
+
+        // If confirmations are off, a session is returned immediately.
+        if (data.session) {
+          toast.success("Welcome aboard. You're signed in.");
+          nav("/book", { replace: true });
+          return;
+        }
+
+        // Fallback: try to sign in directly (covers cases where confirmations are disabled but session wasn't returned)
+        const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+        if (signInError) {
+          if (signInError.message?.toLowerCase().includes("email not confirmed")) {
+            toast.success("Account created. Check your email to confirm.");
+            return;
+          }
+          throw signInError;
+        }
+        toast.success("Welcome aboard.");
+        nav("/book", { replace: true });
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success("Welcome back.");
+        nav("/book", { replace: true });
       }
     } catch (err: any) {
-      toast.error(err.message ?? "Something went wrong");
+      console.error("[Auth] error:", err);
+      toast.error(friendlyError(err));
     } finally {
       setLoading(false);
     }
