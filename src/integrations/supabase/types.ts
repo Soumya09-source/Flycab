@@ -14,7 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      rides: {
+        Row: {
+          created_at: string
+          distance_km: number
+          end_label: string
+          end_lat: number
+          end_lng: number
+          eta_minutes: number
+          id: string
+          price: number
+          start_label: string
+          start_lat: number
+          start_lng: number
+          tier: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          distance_km: number
+          end_label: string
+          end_lat: number
+          end_lng: number
+          eta_minutes: number
+          id?: string
+          price: number
+          start_label: string
+          start_lat: number
+          start_lng: number
+          tier: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          distance_km?: number
+          end_label?: string
+          end_lat?: number
+          end_lng?: number
+          eta_minutes?: number
+          id?: string
+          price?: number
+          start_label?: string
+          start_lat?: number
+          start_lng?: number
+          tier?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
