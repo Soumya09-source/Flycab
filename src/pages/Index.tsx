@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Plane, Clock, Shield, Sparkles, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { MiniMap } from "@/components/MiniMap";
 
 const Index = () => {
   const { user } = useAuth();
@@ -81,26 +82,16 @@ const Index = () => {
 
           {/* Visual */}
           <div className="relative h-[420px] md:h-[520px] hidden md:block">
-            <div className="absolute inset-0 glass rounded-3xl overflow-hidden shadow-elegant">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10" />
-              <svg className="absolute inset-0 w-full h-full opacity-30" viewBox="0 0 400 500" fill="none">
-                {Array.from({ length: 12 }).map((_, i) => (
-                  <line key={i} x1="0" y1={i * 45} x2="400" y2={i * 45} stroke="hsl(42 60% 50% / 0.15)" />
-                ))}
-                {Array.from({ length: 10 }).map((_, i) => (
-                  <line key={"v" + i} x1={i * 45} y1="0" x2={i * 45} y2="500" stroke="hsl(42 60% 50% / 0.15)" />
-                ))}
-                <path d="M 50 420 Q 200 100 360 80" stroke="hsl(42 70% 60%)" strokeWidth="2" strokeDasharray="6 6" fill="none" />
-                <circle cx="50" cy="420" r="6" fill="hsl(42 70% 60%)" />
-                <circle cx="360" cy="80" r="6" fill="hsl(42 70% 60%)" />
-              </svg>
-              <div className="absolute top-1/3 left-1/2 -translate-x-1/2 animate-float">
-                <div className="relative">
-                  <div className="absolute inset-0 blur-2xl bg-primary/40 rounded-full" />
-                  <Plane className="relative h-24 w-24 text-gold rotate-[-30deg]" strokeWidth={1.2} />
-                </div>
+            <div className="absolute inset-0 glass rounded-3xl overflow-hidden shadow-elegant flex flex-col">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10 z-20 pointer-events-none rounded-3xl" />
+              
+              <div className="absolute inset-0 z-10">
+                <MiniMap 
+                  pickup={latestRide ? [latestRide.start_lat, latestRide.start_lng] : null} 
+                  destination={latestRide ? [latestRide.end_lat, latestRide.end_lng] : null} 
+                />
               </div>
-              <div className="absolute bottom-6 left-6 right-6 glass rounded-xl p-4 flex items-center justify-between">
+              <div className="absolute bottom-6 left-6 right-6 glass rounded-xl p-4 flex items-center justify-between z-30">
                 <div>
                   <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{latestRide ? "Live route" : "Popular route"}</div>
                   <div className="text-sm truncate max-w-[200px]">{latestRide ? `${latestRide.start_label} → ${latestRide.end_label}` : "MG Road → Airport"}</div>
