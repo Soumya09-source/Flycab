@@ -36,9 +36,14 @@ const History = () => {
     const { data, error } = await supabase
       .from("rides")
       .select("*")
+      .eq("user_id", user.id)
       .order("created_at", { ascending: false });
-    if (error) toast.error(error.message);
-    else setRides(data as Ride[]);
+    if (error) {
+      console.error("[History] Load error:", error);
+      toast.error(error.message);
+    } else {
+      setRides(data as Ride[]);
+    }
     setLoading(false);
   };
 
@@ -46,7 +51,10 @@ const History = () => {
 
   const remove = async (id: string) => {
     const { error } = await supabase.from("rides").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) {
+      console.error("[History] Remove error:", error);
+      return toast.error(error.message);
+    }
     setRides((r) => r.filter((x) => x.id !== id));
     toast.success("Ride removed");
   };

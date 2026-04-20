@@ -3,9 +3,33 @@ import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { Plane, Clock, Shield, Sparkles, ArrowRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const { user } = useAuth();
+  const [latestRide, setLatestRide] = useState<any>(null);
+
+  useEffect(() => {
+    if (!user) {
+      setLatestRide(null);
+      return;
+    }
+    const fetchLatest = async () => {
+      const { data, error } = await supabase
+        .from('rides')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle(); // maybeSingle safely returns null if empty
+      
+      if (!error && data) {
+        setLatestRide(data);
+      }
+    };
+    fetchLatest();
+  }, [user]);
 
   return (
     <div className="min-h-screen">
@@ -78,11 +102,11 @@ const Index = () => {
               </div>
               <div className="absolute bottom-6 left-6 right-6 glass rounded-xl p-4 flex items-center justify-between">
                 <div>
-                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Live route</div>
-                  <div className="text-sm">MG Road → Airport</div>
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{latestRide ? "Live route" : "Popular route"}</div>
+                  <div className="text-sm truncate max-w-[200px]">{latestRide ? `${latestRide.start_label} → ${latestRide.end_label}` : "MG Road → Airport"}</div>
                 </div>
-                <div className="text-right">
-                  <div className="font-display text-xl text-gold-gradient">9 min</div>
+                <div className="text-right shrink-0">
+                  <div className="font-display text-xl text-gold-gradient">{latestRide ? `${latestRide.eta_minutes} min` : "9 min"}</div>
                 </div>
               </div>
             </div>
