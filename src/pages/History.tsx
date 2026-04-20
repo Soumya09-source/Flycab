@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { formatINR } from "@/lib/pricing";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Plane, ArrowRight, Clock, Trash2 } from "lucide-react";
+import { Plane, ArrowRight, Clock, Trash2, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 
 type Ride = {
@@ -100,8 +100,13 @@ const History = () => {
                     <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {r.eta_minutes} min</span>
                   </div>
                 </div>
-                <div className={`text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-full border ${tierColor[r.tier]}`}>
-                  {r.tier}
+                <div className="flex flex-col gap-2 items-end justify-center">
+                  <div className={`text-[10px] w-full text-center uppercase tracking-wider px-2.5 py-1 rounded-full border ${tierColor[r.tier]}`}>
+                    {r.tier}
+                  </div>
+                  <div className="text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-full border border-green-500/50 text-green-500 bg-green-500/10 flex items-center gap-1.5 whitespace-nowrap">
+                    <CheckCircle className="w-3 h-3"/> Completed
+                  </div>
                 </div>
                 <div className="text-right">
                   <div className="font-display text-2xl text-gold-gradient">{formatINR(Number(r.price))}</div>

@@ -27,6 +27,7 @@ export const Navbar = () => {
           <Link to="/" className={linkCls("/")}>Home</Link>
           {user && <Link to="/book" className={linkCls("/book")}>Book</Link>}
           {user && <Link to="/history" className={linkCls("/history")}>History</Link>}
+          {user && <Link to="/profile" className={linkCls("/profile")}>Profile</Link>}
         </nav>
 
         <div className="flex items-center gap-2">

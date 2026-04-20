@@ -141,14 +141,16 @@ const Index = () => {
             { name: "Standard", price: "₹112/km", desc: "Private cabin. Refined and quick.", featured: true },
             { name: "Premium", price: "₹312/km", desc: "Luxury suite. Concierge included.", featured: false },
           ].map((t) => (
-            <div key={t.name} className={`rounded-2xl p-7 transition-all ${
-              t.featured ? "glass border-primary/40 shadow-gold scale-[1.02]" : "glass hover:border-primary/30"
-            }`}>
-              {t.featured && <div className="text-[10px] uppercase tracking-wider text-gold mb-2">Most chosen</div>}
-              <h3 className="font-display text-3xl">{t.name}</h3>
-              <div className="font-display text-4xl text-gold-gradient mt-3">{t.price}</div>
-              <p className="text-sm text-muted-foreground mt-3">{t.desc}</p>
-            </div>
+            <Link key={t.name} to={user ? `/book?tier=${t.name.toLowerCase()}` : "/auth?mode=signup"} className="block group">
+              <div className={`rounded-2xl p-7 transition-all h-full ${
+                t.featured ? "glass border-primary/40 shadow-gold group-hover:scale-[1.02]" : "glass border-border/50 group-hover:border-primary/30"
+              }`}>
+                {t.featured && <div className="text-[10px] uppercase tracking-wider text-gold mb-2">Most chosen</div>}
+                <h3 className="font-display text-3xl transition-colors group-hover:text-gold">{t.name}</h3>
+                <div className="font-display text-4xl text-gold-gradient mt-3">{t.price}</div>
+                <p className="text-sm text-muted-foreground mt-3">{t.desc}</p>
+              </div>
+            </Link>
           ))}
         </div>
 
